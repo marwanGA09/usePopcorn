@@ -53,7 +53,6 @@ const average = (arr) =>
 function NavBar({ children }) {
   return (
     <nav className="nav-bar">
-      {' '}
       <Logo />
       {children}
     </nav>
@@ -94,7 +93,6 @@ export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      {' '}
       <NavBar>
         <Search />
         <NumResult movies={movies} />
