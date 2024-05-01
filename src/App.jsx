@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const tempMovieData = [
   {
@@ -89,8 +89,36 @@ function Logo() {
   );
 }
 
+// USE EFFECT WITH NORMAL PROMISING METHOD
+/*
+useEffect(function () {
+    fetch(`http://www.omdbapi.com/?apikey=${api_key}&${search}`)
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+  }); 
+*/
+
+// const api_key = 'http://www.omdbapi.com/?i=tt3896198&apikey=f95b9c0d';
+const api_key = 'f95b9c0d';
+const search = 'transformation';
+
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
+  useEffect(function () {
+    async function fetchMovies() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${api_key}&s=${search}`
+      );
+      console.log(res);
+      if (!res.ok) throw new Error('Some thing gone wrong');
+
+      const data = await res.json();
+      // console.log(data);
+      setMovies(data.Search);
+      // if (1 < 0) console.log('false');
+    }
+    fetchMovies();
+  }, []);
   return (
     <>
       <NavBar>
