@@ -131,9 +131,10 @@ export default function App() {
 }
 
 function Movies({ movie }) {
+  // console.log('movie,', movie);
   return (
     <li>
-      <img src="./../public/defualt-img.jpg" alt={`${movie.Title} poster`} />
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
         <p>
