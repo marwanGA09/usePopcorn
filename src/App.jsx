@@ -145,29 +145,23 @@ function Movies({ movie }) {
   );
 }
 
-function MoviesList({ movies }) {
+function MoviesList({ movies, selectedMovie }) {
+  // console.log(movies);
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movies movie={movie} key={movie.imdbID} />
+        <Movies
+          movie={movie}
+          key={movie.imdbID}
+          selectedMovie={selectedMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Main({ movies }) {
-  const [watched, setWatched] = useState(tempWatchedData);
-  return (
-    <main className="main">
-      <Box>
-        <MoviesList movies={movies} />
-      </Box>
-      <Box>
-        <MoviesSummary watched={watched} />
-        <WatchedMoviesList watched={watched} />
-      </Box>
-    </main>
-  );
+function Main({ children }) {
+  return <main className="main">{children}</main>;
 }
 
 function MoviesSummary({ watched }) {
