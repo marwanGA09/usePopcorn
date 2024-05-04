@@ -99,40 +99,152 @@ useEffect(function () {
 
 // const api_key = 'http://www.omdbapi.com/?i=tt3896198&apikey=f95b9c0d';
 const api_key = 'f95b9c0d';
-const search = 'transformation';
+// const search = 'tom and jerry';
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  useEffect(function () {
-    async function fetchMovies() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${api_key}&s=${search}`
-      );
-      console.log(res);
-      if (!res.ok) throw new Error('Some thing gone wrong');
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [ErrorOccur, setErrorOccur] = useState('');
+  const [query, setQuery] = useState('tom and jerry');
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${api_key}&s=${query}`
+          );
 
-      const data = await res.json();
-      // console.log(data);
-      setMovies(data.Search);
-      // if (1 < 0) console.log('false');
-    }
-    fetchMovies();
-  }, []);
+          if (!res.ok) {
+            // IF SOME THING GONE WRONG
+            throw new Error('Some thing went wrong');
+          }
+
+          const data = await res.json();
+          if (data.Response === 'False') {
+            // IF FETCHED DATA DOES NOT FOUND
+            throw new Error(data.Error);
+          }
+          setMovies(data.Search);
+        } catch (err) {
+          setErrorOccur(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      fetchMovies();
+    },
+    [query]
+  );
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResult movies={movies} />
       </NavBar>
-      <Main movies={movies} />
+
+      <Main>
+        <Box>
+          {isLoading ? (
+            <Loading />
+          ) : ErrorOccur ? (
+            <ErrorComponent message={ErrorOccur} />
+          ) : (
+            <MoviesList movies={movies} selectedMovie={setSelectedMovie} />
+          )}
+        </Box>
+        <Box>
+          {selectedMovie ? (
+            <MovieDetails selectedMovie={selectedMovie} />
+          ) : (
+            <>
+              <MoviesSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
+        </Box>
+      </Main>
     </>
   );
 }
 
-function Movies({ movie }) {
-  // console.log('movie,', movie);
+function MovieDetails({ selectedMovie }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [movie, setMovie] = useState({});
+  useEffect(
+    function () {
+      setIsLoading(true);
+      async function fetchDetail() {
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${api_key}&i=${selectedMovie}`
+        );
+        const data = await res.json();
+        setMovie(data);
+        setIsLoading(false);
+        console.log(data);
+      }
+      fetchDetail();
+    },
+    [selectedMovie]
+  );
   return (
-    <li>
+    <div className="details">
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back">&larr;</button>
+            <img src={movie.Poster} alt={`Poster of ${movie.Title} movie`} />
+            <div className="details-overview">
+              <h2>{movie.Title}</h2>
+              <p>
+                {movie.Released} &bull; {movie.Runtime}
+              </p>
+              <p>{movie.Genre}</p>
+              <p>
+                <span>⭐️</span>
+                {movie.imdbRating} IMDb rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <div className="rating">
+              <Rating maxRating={10} size={24} color="#ffd700" />
+            </div>
+            <p>
+              <em>{movie.Plot}</em>
+            </p>
+            <p>Starring {movie.Actors}</p>
+            <p>Directed by {movie.Director}</p>
+          </section>
+        </>
+      )}
+    </div>
+  );
+}
+function ErrorComponent({ message }) {
+  return (
+    <div className="error">
+      <h2>Error</h2>
+      <p>{message}</p>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="loader">
+      <p>Loading...</p>
+    </div>
+  );
+}
+
+function Movies({ movie, selectedMovie }) {
+  return (
+    <li onClick={() => selectedMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
