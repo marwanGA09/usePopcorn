@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Rating from './RatingComponent/Rating';
 
 const tempMovieData = [
   {
@@ -62,20 +63,18 @@ function NavBar({ children }) {
 function NumResult({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length || 0}</strong> results
     </p>
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState('');
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
       type="text"
       placeholder="Search movies..."
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
+      onKeyDown={(e) => setQuery(e.key === 'Enter' ? e.target.value : query)}
     />
   );
 }
