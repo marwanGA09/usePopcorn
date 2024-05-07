@@ -183,6 +183,7 @@ export default function App() {
 function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
+  const [isRated, setIsRated] = useState(false);
   useEffect(
     function () {
       setIsLoading(true);
@@ -207,7 +208,14 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
     Poster: movie.Poster,
     runtime: movie.Runtime,
     imdbRating: movie.imdbRating,
+    userRating: movie.userRating,
   };
+
+  function handleUserRating(rate) {
+    setMovie((movie) => {
+      return { ...movie, userRating: rate };
+    });
+  }
 
   console.log(newWatchedMovie);
   return (
@@ -233,11 +241,18 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
           </header>
           <section>
             <div className="rating">
-              <Rating maxRating={10} size={24} color="#ffd700" />
+              <Rating
+                maxRating={10}
+                size={24}
+                color="#ffd700"
+                onSetRating={handleUserRating}
+              />
             </div>
-            <button className="btn-add btn" onClick={onAddWatchedMovie}>
-              Add to list
-            </button>
+            {!isRated && (
+              <button className="btn-add btn" onClick={onAddWatchedMovie}>
+                Add to list
+              </button>
+            )}
             <p>
               <em>{movie.Plot}</em>
             </p>
