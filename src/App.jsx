@@ -79,21 +79,6 @@ function Search({ query, setQuery }) {
   );
 }
 
-function TestButton() {
-  const [data, setData] = useState(0);
-  return (
-    <button
-      className="btn"
-      onClick={() => {
-        setData(data + 5);
-        setData((sa) => sa + 1);
-      }}
-    >
-      add
-    </button>
-  );
-}
-
 function Logo() {
   return (
     <div className="logo">
@@ -153,11 +138,17 @@ export default function App() {
     },
     [query]
   );
+
+  function handleAddWatchedMovie(newMovie) {
+    console.log(newMovie);
+    console.log('add watched movie');
+    // setWatched((watched) => [newMovie, ...watched]);
+  }
+
   return (
     <>
       <NavBar>
         <Search query={query} setQuery={setQuery} />
-        <TestButton />
         <NumResult movies={movies} />
       </NavBar>
 
@@ -173,7 +164,10 @@ export default function App() {
         </Box>
         <Box>
           {selectedMovie ? (
-            <MovieDetails selectedMovie={selectedMovie} />
+            <MovieDetails
+              selectedMovie={selectedMovie}
+              onAddWatchedMovie={handleAddWatchedMovie}
+            />
           ) : (
             <>
               <MoviesSummary watched={watched} />
@@ -186,7 +180,7 @@ export default function App() {
   );
 }
 
-function MovieDetails({ selectedMovie }) {
+function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   useEffect(
@@ -205,6 +199,17 @@ function MovieDetails({ selectedMovie }) {
     },
     [selectedMovie]
   );
+
+  let newWatchedMovie = {
+    imdbID: movie.imdbID,
+    Title: movie.Title,
+    Year: movie.Year,
+    Poster: movie.Poster,
+    runtime: movie.Runtime,
+    imdbRating: movie.imdbRating,
+  };
+
+  console.log(newWatchedMovie);
   return (
     <div className="details">
       {isLoading ? (
@@ -230,6 +235,9 @@ function MovieDetails({ selectedMovie }) {
             <div className="rating">
               <Rating maxRating={10} size={24} color="#ffd700" />
             </div>
+            <button className="btn-add btn" onClick={onAddWatchedMovie}>
+              Add to list
+            </button>
             <p>
               <em>{movie.Plot}</em>
             </p>
@@ -324,7 +332,7 @@ function MoviesSummary({ watched }) {
 function WatchedMovieItem({ movie }) {
   return (
     <li>
-      <img src="./../public/defualt-img.jpg" alt={`${movie.Title} poster`} />
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
         <p>
