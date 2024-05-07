@@ -79,6 +79,21 @@ function Search({ query, setQuery }) {
   );
 }
 
+function TestButton() {
+  const [data, setData] = useState(0);
+  return (
+    <button
+      className="btn"
+      onClick={() => {
+        setData(data + 5);
+        setData((sa) => sa + 1);
+      }}
+    >
+      add
+    </button>
+  );
+}
+
 function Logo() {
   return (
     <div className="logo">
@@ -142,6 +157,7 @@ export default function App() {
     <>
       <NavBar>
         <Search query={query} setQuery={setQuery} />
+        <TestButton />
         <NumResult movies={movies} />
       </NavBar>
 
