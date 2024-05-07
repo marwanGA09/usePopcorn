@@ -106,7 +106,7 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
   const [ErrorOccur, setErrorOccur] = useState('');
-  const [query, setQuery] = useState('tom and jerry');
+  const [query, setQuery] = useState('car');
   const [selectedMovie, setSelectedMovie] = useState(null);
   useEffect(
     function () {
@@ -211,7 +211,7 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
     Title: movie.Title,
     Year: movie.Year,
     Poster: movie.Poster,
-    runtime: movie.Runtime,
+    runtime: movie.Runtime ? movie.Runtime.split(' ')[0] : 0,
     imdbRating: movie.imdbRating,
     userRating: movie.userRating,
   };
@@ -257,7 +257,6 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
                 size={24}
                 color="#ffd700"
                 onSetRating={handleUserRating}
-                defaultRating={newWatchedMovie.userRating || 0}
               />
             </div>
             {isRated && (
