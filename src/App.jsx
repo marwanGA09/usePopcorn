@@ -140,9 +140,12 @@ export default function App() {
   );
 
   function handleAddWatchedMovie(newMovie) {
-    console.log(newMovie);
-    console.log('add watched movie');
-    // setWatched((watched) => [newMovie, ...watched]);
+    // console.log('newmovie', newMovie);
+    console.log('movie', watched);
+    setWatched((watched) => [
+      newMovie,
+      ...watched.filter((wat) => wat.imdbID !== newMovie.imdbID),
+    ]);
   }
 
   return (
@@ -167,6 +170,7 @@ export default function App() {
             <MovieDetails
               selectedMovie={selectedMovie}
               onAddWatchedMovie={handleAddWatchedMovie}
+              onClose={setSelectedMovie}
             />
           ) : (
             <>
@@ -180,10 +184,11 @@ export default function App() {
   );
 }
 
-function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
+function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   const [isRated, setIsRated] = useState(false);
+
   useEffect(
     function () {
       setIsLoading(true);
@@ -215,9 +220,13 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
     setMovie((movie) => {
       return { ...movie, userRating: rate };
     });
+    setIsRated(true);
   }
 
-  console.log(newWatchedMovie);
+  function closeMoviesDetails() {
+    onClose(null);
+  }
+  // console.log(newWatchedMovie);
   return (
     <div className="details">
       {isLoading ? (
@@ -225,7 +234,9 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
       ) : (
         <>
           <header>
-            <button className="btn-back">&larr;</button>
+            <button className="btn-back" onClick={closeMoviesDetails}>
+              &larr;
+            </button>
             <img src={movie.Poster} alt={`Poster of ${movie.Title} movie`} />
             <div className="details-overview">
               <h2>{movie.Title}</h2>
@@ -246,10 +257,17 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie }) {
                 size={24}
                 color="#ffd700"
                 onSetRating={handleUserRating}
+                defaultRating={newWatchedMovie.userRating || 0}
               />
             </div>
-            {!isRated && (
-              <button className="btn-add btn" onClick={onAddWatchedMovie}>
+            {isRated && (
+              <button
+                className="btn-add btn"
+                onClick={() => {
+                  onAddWatchedMovie(newWatchedMovie);
+                  closeMoviesDetails();
+                }}
+              >
                 Add to list
               </button>
             )}
