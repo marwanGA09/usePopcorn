@@ -141,7 +141,7 @@ export default function App() {
 
   function handleAddWatchedMovie(newMovie) {
     // console.log('newmovie', newMovie);
-    console.log('movie', watched);
+    // console.log('movie', watched);
     setWatched((watched) => [
       newMovie,
       ...watched.filter((wat) => wat.imdbID !== newMovie.imdbID),
@@ -195,7 +195,7 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   const [isRated, setIsRated] = useState(false);
-
+  console.log(movie.Title);
   useEffect(
     function () {
       setIsLoading(true);
@@ -206,11 +206,28 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
         const data = await res.json();
         setMovie(data);
         setIsLoading(false);
-        console.log(data);
+        // console.log(data);
       }
       fetchDetail();
     },
     [selectedMovie]
+  );
+
+  useEffect(
+    function () {
+      if (movie.Title) {
+        document.title = `Movie | ${movie.Title}`;
+      }
+      return () => {
+        document.title = 'usePopcorn';
+        console.log('run at the end', movie.Title);
+        console.log(
+          'and still remember then the tittle after the user effect is unmounted because of CLOSURE'
+        );
+        console.log('!remember clean up function run after effect is removed');
+      };
+    },
+    [movie]
   );
 
   let newWatchedMovie = {
@@ -305,9 +322,20 @@ function Loading() {
   );
 }
 
+function changeTittle({ selectedMovie }) {
+  // console.log('change tittle,', selectedMovie);
+  // document.title = selectedMovie
+}
+
 function Movies({ movie, selectedMovie }) {
   return (
-    <li onClick={() => selectedMovie(movie.imdbID)}>
+    <li
+      onClick={() => {
+        selectedMovie(movie.imdbID);
+        // console.log('CHANEG', movie.Title);
+        // document.title = movie.Title;
+      }}
+    >
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
