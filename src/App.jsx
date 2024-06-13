@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Rating from './RatingComponent/Rating';
+
+console.time('start');
 
 const tempMovieData = [
   {
@@ -69,12 +71,23 @@ function NumResult({ movies }) {
 }
 
 function Search({ query, setQuery }) {
+  const inputEl = useRef(null);
+  useEffect(function () {
+    console.log(inputEl.current);
+    inputEl.current.focus();
+  }, []);
+
+  // useEffect(function () {
+
+  // }, []);
+
   return (
     <input
       className="search"
       type="text"
-      placeholder="Search movies..."
+      placeholder="Sealocalstrch movies..."
       onKeyDown={(e) => setQuery(e.key === 'Enter' ? e.target.value : query)}
+      ref={inputEl}
     />
   );
 }
@@ -134,14 +147,13 @@ export default function App() {
           setIsLoading(false);
         }
       }
+      setSelectedMovie(null);
       fetchMovies();
     },
     [query]
   );
 
   function handleAddWatchedMovie(newMovie) {
-    // console.log('newmovie', newMovie);
-    // console.log('movie', watched);
     setWatched((watched) => [
       newMovie,
       ...watched.filter((wat) => wat.imdbID !== newMovie.imdbID),
@@ -166,7 +178,7 @@ export default function App() {
           ) : ErrorOccur ? (
             <ErrorComponent message={ErrorOccur} />
           ) : (
-            <MoviesList movies={movies} selectedMovie={setSelectedMovie} />
+            <MoviesList movies={movies} setSelectedMovie={setSelectedMovie} />
           )}
         </Box>
         <Box>
@@ -195,7 +207,7 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   const [isRated, setIsRated] = useState(false);
-  console.log(movie.Title);
+  // console.log(movie.Title);
   useEffect(
     function () {
       setIsLoading(true);
@@ -220,11 +232,12 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
       }
       return () => {
         document.title = 'usePopcorn';
-        console.log('run at the end', movie.Title);
-        console.log(
-          'and still remember then the tittle after the user effect is unmounted because of CLOSURE'
-        );
-        console.log('!remember clean up function run after effect is removed');
+
+        // console.log('run at the end', movie.Title);
+        // console.log(
+        //   'and still remember then the tittle after the user effect is unmounted because of CLOSURE'
+        // );
+        // console.log('!remember clean up function run after effect is removed');
       };
     },
     [movie]
@@ -250,7 +263,20 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
   function closeMoviesDetails() {
     onClose(null);
   }
-  // console.log(newWatchedMovie);
+
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.key === 'Escape') {
+          closeMoviesDetails((selectedMovie) => null);
+          console.log('Closed');
+        }
+      }
+      document.addEventListener('keydown', callback);
+      return () => document.removeEventListener('keydown', callback);
+    },
+    [closeMoviesDetails]
+  );
   return (
     <div className="details">
       {isLoading ? (
@@ -327,11 +353,11 @@ function changeTittle({ selectedMovie }) {
   // document.title = selectedMovie
 }
 
-function Movies({ movie, selectedMovie }) {
+function Movies({ movie, setSelectedMovie }) {
   return (
     <li
       onClick={() => {
-        selectedMovie(movie.imdbID);
+        setSelectedMovie(movie.imdbID);
         // console.log('CHANEG', movie.Title);
         // document.title = movie.Title;
       }}
@@ -348,7 +374,7 @@ function Movies({ movie, selectedMovie }) {
   );
 }
 
-function MoviesList({ movies, selectedMovie }) {
+function MoviesList({ movies, setSelectedMovie }) {
   // console.log(movies);
   return (
     <ul className="list list-movies">
@@ -356,7 +382,7 @@ function MoviesList({ movies, selectedMovie }) {
         <Movies
           movie={movie}
           key={movie.imdbID}
-          selectedMovie={selectedMovie}
+          setSelectedMovie={setSelectedMovie}
         />
       ))}
     </ul>
@@ -451,3 +477,4 @@ function Box({ children }) {
     </div>
   );
 }
+console.timeEnd('start');
