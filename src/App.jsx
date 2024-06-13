@@ -77,15 +77,11 @@ function Search({ query, setQuery }) {
     inputEl.current.focus();
   }, []);
 
-  // useEffect(function () {
-
-  // }, []);
-
   return (
     <input
       className="search"
       type="text"
-      placeholder="Sealocalstrch movies..."
+      placeholder="search movies..."
       onKeyDown={(e) => setQuery(e.key === 'Enter' ? e.target.value : query)}
       ref={inputEl}
     />
@@ -116,7 +112,9 @@ const api_key = 'f95b9c0d';
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState(function () {
+    return JSON.parse(localStorage.getItem('watchedMovie'));
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [ErrorOccur, setErrorOccur] = useState('');
   const [query, setQuery] = useState('car');
@@ -163,6 +161,10 @@ export default function App() {
   function handleDeleteWatchedMovie(id) {
     setWatched((watched) => watched.filter((wat) => wat.imdbID !== id));
   }
+
+  useEffect(() => {
+    localStorage.setItem('watchedMovie', JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
