@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import Rating from './RatingComponent/Rating';
-
-console.time('start');
 
 const tempMovieData = [
   {
@@ -56,7 +54,7 @@ const average = (arr) =>
 function NavBar({ children }) {
   return (
     <nav className="nav-bar">
-      <Logo />
+      <MemoisedLogo />
       {children}
     </nav>
   );
@@ -70,10 +68,13 @@ function NumResult({ movies }) {
   );
 }
 
+const MemoisedNumResult = memo(NumResult);
+
 function Search({ query, setQuery }) {
+  console.log('search render');
   const inputEl = useRef(null);
   useEffect(function () {
-    console.log(inputEl.current);
+    // console.log(inputEl.current);
     inputEl.current.focus();
   }, []);
 
@@ -88,7 +89,10 @@ function Search({ query, setQuery }) {
   );
 }
 
+const MemoisedSearch = memo(Search);
+
 function Logo() {
+  console.log('LOgo renderd');
   return (
     <div className="logo">
       <span role="img">🍿</span>
@@ -96,6 +100,8 @@ function Logo() {
     </div>
   );
 }
+
+const MemoisedLogo = memo(Logo);
 
 // USE EFFECT WITH NORMAL PROMISING METHOD
 /*
@@ -113,7 +119,7 @@ const api_key = 'f95b9c0d';
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(function () {
-    return JSON.parse(localStorage.getItem('watchedMovie'));
+    return JSON.parse(localStorage.getItem('watchedMovie')) || [];
   });
   const [isLoading, setIsLoading] = useState(false);
   const [ErrorOccur, setErrorOccur] = useState('');
@@ -169,8 +175,8 @@ export default function App() {
   return (
     <>
       <NavBar>
-        <Search query={query} setQuery={setQuery} />
-        <NumResult movies={movies} />
+        <MemoisedSearch query={query} setQuery={setQuery} />
+        <MemoisedNumResult movies={movies} />
       </NavBar>
 
       <Main>
@@ -262,15 +268,13 @@ function MovieDetails({ selectedMovie, onAddWatchedMovie, onClose }) {
     setIsRated(true);
   }
 
-  function closeMoviesDetails() {
-    onClose(null);
-  }
+  const closeMoviesDetails = useCallback(() => onClose(null), [onClose]);
 
   useEffect(
     function () {
       function callback(e) {
         if (e.key === 'Escape') {
-          closeMoviesDetails((selectedMovie) => null);
+          closeMoviesDetails(null);
           console.log('Closed');
         }
       }
