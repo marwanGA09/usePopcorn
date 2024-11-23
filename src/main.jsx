@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 import ContextApp from './contexts/ContextApp.jsx';
+import ScrollInto from './ScrollInto/ScrollInto.jsx';
 // import HowReactWork from './HowReactWork/HowReactWork.jsx';
 // import Rating from './RatingComponent/Rating.jsx';
 // import TextExpand from './textExpanderComponent/Text-expander.jsx';
@@ -55,6 +56,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {/* <Test /> */}
     {/* <TextExpand /> */}
     {/* <HowReactWork /> */}
-    <ContextApp />
+    {/* <ContextApp /> */}
+    <ScrollInto />
   </React.StrictMode>
 );
